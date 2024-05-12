@@ -1,7 +1,8 @@
-package Proyecto;
+
 
 
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -30,38 +31,38 @@ public class Fin extends JFrame {
     private JLabel Titulo1;
     private JTabbedPane Panel1;
     private JPanel panelIni;
-    private JTextArea textNom; // textNom
-    private JButton Enviar;
+    public static JTextArea textNom; // textNom
+    public static JButton Enviar;
     private JLabel etiAutor;
-    private JTextArea textautor; // textautor
+    public static JTextArea textautor; // textautor
     private JLabel etiFormat;
     private JLabel etiGene;
     private JLabel etiNom;
     private JLabel etiNom2;
-    private JComboBox<String> generos;
-    private ButtonGroup grupo;
-    private JRadioButton Boton1;
-    private JRadioButton Boton2;
-    private JRadioButton Boton3;
-    private JRadioButton Boton4;
-    private JRadioButton Boton5;
-    private JRadioButton Boton6;
+    public static JComboBox<String> generos;
+    public static ButtonGroup grupo;
+    public static JRadioButton Boton1;
+    public static JRadioButton Boton2;
+    public static JRadioButton Boton3;
+    public static JRadioButton Boton4;
+    public static JRadioButton Boton5;
+    public static JRadioButton Boton6;
     // VENTANA BUSCA CANCION
     private JLabel tituloMed;
-    private JTextArea textoBuscar;
-    private JButton Busca;
-    private JButton Eliminar;
+    public static JTextArea textoBuscar;
+    public static JButton Busca;
+    public static JButton Eliminar;
     private JPanel medCont;
-    private JTextField output;
+    public static JTextField output;
     private JPanel panelMed;
     // VENTANA CANTIDAD DE CANCIONES
-    private JLabel TituloFin;
+    public static JLabel TituloFin;
     private JPanel panelFin;
-    private JLabel textFin;
-    private JTextArea outputFin; // outputFin
+    public static JLabel textFin;
+    public static JTextArea outputFin; // outputFin
     private JScrollPane scrollFin; // scrollFin
     //COMPLEMENTOS
-    public String formato;
+    public static String formato;
     public Fin () {
         // INICIALIZA PESTAÑA INICIAL
         Panel1 = new JTabbedPane();
@@ -75,17 +76,17 @@ public class Fin extends JFrame {
         etiFormat = new JLabel();
         grupo= new ButtonGroup();
        
-        Boton1 = new JRadioButton();
-        Boton2 = new JRadioButton(); //Boton6
-        Boton3 = new JRadioButton();
-        Boton4 = new JRadioButton();
-        Boton5 = new JRadioButton();
-        Boton6 = new JRadioButton();
-        
+        Boton1 = new JRadioButton("mp3");
+        Boton2 = new JRadioButton("wav"); //Boton6
+        Boton3 = new JRadioButton("mov");
+        Boton4 = new JRadioButton("mov",true);
+        Boton5 = new JRadioButton("midi");
+        Boton6 = new JRadioButton("wav");
+
         
         etiGene = new JLabel();
-        generos = new JComboBox<>();
-        Enviar = new JButton();
+        generos = new JComboBox<>(new String[]{"Rock", "Pop", "Funky", "Reggae", "Salsa"});
+        Enviar = new JButton("Enviar");
         
         // INICIALIZA PESTAÑA DEL MEDIO
         panelMed = new JPanel();
@@ -94,8 +95,8 @@ public class Fin extends JFrame {
         etiNom2 = new JLabel();
         textoBuscar = new JTextArea(); 
         output = new JTextField();
-        Busca = new JButton();
-        Eliminar = new JButton();
+        Busca = new JButton("Buscar");
+        Eliminar = new JButton("Eliminar");
         
         // INICIALIZA PESTAÑA FINAL
         panelFin = new JPanel();
@@ -114,44 +115,12 @@ public class Fin extends JFrame {
         textNom.setSize(20, 30);
         etiAutor.setText("Autor/ra:");
         textautor.setSize(20, 30);
-
         
-
-        generos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Rock", "Pop", "Funky", "Reggae", "Salsa" }));
         generos.setPreferredSize(null);
-        generos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                generosActionPerformed(evt);
-            }
-        });
-
-        Boton1.setText("mp3");
-        Boton2.setText("wav");
-        Boton3.setText("mov");
-        Boton4.setText("midi");
-        Boton5.setText("mp4");
-        Boton6.setText("wav");
-        miListener oyente = new miListener(formato);
-        Boton1.addActionListener(oyente);
-        Boton2.addActionListener(oyente);
-        Boton3.addActionListener(oyente);
-        Boton4.addActionListener(oyente);
-        Boton5.addActionListener(oyente);
-        Boton6.addActionListener(oyente);
-        etiFormat.setText("Formato:");
-        etiGene.setText("Genero:");
         
-        Enviar.setText("Enviar");
-        Enviar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Set <Canciones> can= new HashSet<Canciones>();
-                Canciones can1= new Canciones(textNom.getText(),textautor.getText(),oyente.formato,generos.getSelectedItem().toString());
-                can.add(can1);
-                
-                System.out.println(can.toString());
-            }
-        });
+        GestorEventos oye = new GestorEventos(textFin);
+        Enviar.addActionListener(oye); 
+        
         javax.swing.GroupLayout panelIniLayout = new javax.swing.GroupLayout(panelIni);
         panelIni.setLayout(panelIniLayout);
         panelIniLayout.setHorizontalGroup(
@@ -249,27 +218,9 @@ public class Fin extends JFrame {
 
 
         textoBuscar.setSize(20,5);
-
-        output.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                outputActionPerformed(evt);
-            }
-        });
-
-        Busca.setText("Buscar");
-        Busca.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BuscaActionPerformed(evt);
-            }
-        });
-
-        Eliminar.setText("Eliminar");
-        Eliminar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EliminarActionPerformed(evt);
-            }
-        });
-
+        Busca.addActionListener(oye);
+        Eliminar.addActionListener(oye);
+        
         javax.swing.GroupLayout medContLayout = new javax.swing.GroupLayout(medCont);
         medCont.setLayout(medContLayout);
         medContLayout.setHorizontalGroup(
@@ -379,51 +330,51 @@ public class Fin extends JFrame {
         );
 
         pack();
-    }// </editor-fold>                        
-
-    private void outputActionPerformed(java.awt.event.ActionEvent evt) {                                       
-        // TODO add your handling code here:
-    }                                      
-
-    private void BuscaActionPerformed(java.awt.event.ActionEvent evt) {                                      
-        // TODO add your handling code here:
-    }                                     
-
-    private void Boton6ActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        // TODO add your handling code here:
-    }                                             
-
-    private void Boton5ActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        // TODO add your handling code here:
-    }                                             
-
-    private void Boton4ActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        // TODO add your handling code here:
-    }                                             
-
-    private void Boton3ActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        // TODO add your handling code here:
-    }                                             
-
-    private void Boton2ActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        // TODO add your handling code here:
-    }                                             
-
-    private void Boton1ActionPerformed(java.awt.event.ActionEvent evt) {                                              
-        // TODO add your handling code here:
-    }                                             
-
-    private void generosActionPerformed(java.awt.event.ActionEvent evt) {                                        
-        // TODO add your handling code here:
-    }                                       
-
-    private void EnviarActionPerformed(java.awt.event.ActionEvent evt) {                                       
-        // TODO add your handling code here:
-    }                                      
-
-    private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        // TODO add your handling code here:
+    }                     
+    
+    public JTextArea getTextNom() {
+        return textNom;
     }
+
+    public JTextArea getTextautor() {
+        return textautor;
+    }
+
+    public JComboBox<String> getGeneros() {
+        return generos;
+    }
+
+    public JButton getEnviar() {
+        return Enviar;
+    }
+
+    public JButton getBusca() {
+        return Busca;
+    }
+
+    public JButton getEliminar() {
+        return Eliminar;
+    }
+
+    public JTextArea getTextoBuscar() {
+        return textoBuscar;
+    }
+
+    public JTextField getOutput() {
+        return output;
+    }
+    public static String getFormatoSeleccionado() {
+    // Recorre todos los botones de formato para encontrar el seleccionado
+    for (Enumeration<AbstractButton> buttons = grupo.getElements(); buttons.hasMoreElements();) {
+        AbstractButton button = buttons.nextElement();
+        if (button.isSelected()) {
+            return button.getText();
+        }
+    }
+    // Si ningún botón está seleccionado, devuelve null o un valor predeterminado
+    return null;
+}
+    
     public static void main(String args[]) {
         Fin ventana = new Fin();
         ventana.setDefaultCloseOperation(EXIT_ON_CLOSE);
