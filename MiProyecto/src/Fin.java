@@ -1,11 +1,10 @@
 
 
 
-import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
 import javax.swing.*;
 
 /*
@@ -16,14 +15,6 @@ import javax.swing.*;
 /**
  *
  * @author DAW6W
- */
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
  * @author dfmc3
  */
 public class Fin extends JFrame {
@@ -31,10 +22,10 @@ public class Fin extends JFrame {
     private JLabel Titulo1;
     private JTabbedPane Panel1;
     private JPanel panelIni;
-    public static JTextArea textNom; // textNom
+    public static JTextArea textNom; 
     public static JButton Enviar;
     private JLabel etiAutor;
-    public static JTextArea textautor; // textautor
+    public static JTextArea textautor; 
     private JLabel etiFormat;
     private JLabel etiGene;
     private JLabel etiNom;
@@ -59,12 +50,14 @@ public class Fin extends JFrame {
     public static JLabel TituloFin;
     private JPanel panelFin;
     public static JLabel textFin;
-    public static JTextArea outputFin; // outputFin
-    private JScrollPane scrollFin; // scrollFin
+    public static JTextArea outputFin; 
+    private JScrollPane scrollFin; 
     //COMPLEMENTOS
     public static String formato;
+    
     public Fin () {
         // INICIALIZA PESTAÑA INICIAL
+                
         Panel1 = new JTabbedPane();
         panelIni = new JPanel();
         Titulo1 = new JLabel();
@@ -121,6 +114,45 @@ public class Fin extends JFrame {
         GestorEventos oye = new GestorEventos(textFin);
         Enviar.addActionListener(oye); 
         
+        oye.actualizarListaCancionesEnFin(); // Actualiza el JTextArea con las canciones cargadas
+
+        Panel1.addTab("Añadir", panelIni);
+
+        tituloMed.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        tituloMed.setText("Buscar Canción");
+
+        etiNom2.setText("Nombre de Canción: ");
+
+
+        textoBuscar.setSize(20,5);
+        Busca.addActionListener(oye);
+        Eliminar.addActionListener(oye);
+        
+        
+        grupo.add(Boton1);
+        grupo.add(Boton2);
+        grupo.add(Boton3);
+        grupo.add(Boton4);
+        grupo.add(Boton5);
+        grupo.add(Boton6);
+        Panel1.addTab("Buscar", panelMed);
+
+        TituloFin.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        TituloFin.setText("Cuantas canciones hay?");
+
+        textFin.setText("Se han introducido N° canciones al sistema:");
+
+        outputFin.setColumns(20);
+        outputFin.setRows(5);
+        scrollFin.setViewportView(outputFin);
+        
+        PosicionesPanelIni();
+        PosicionesPanelMed();
+        PosicionesPanelFin();
+        cargarDesdeArchivo(outputFin);
+        
+    }
+    private void PosicionesPanelIni(){
         javax.swing.GroupLayout panelIniLayout = new javax.swing.GroupLayout(panelIni);
         panelIni.setLayout(panelIniLayout);
         panelIniLayout.setHorizontalGroup(
@@ -208,19 +240,8 @@ public class Fin extends JFrame {
         );
 
         panelIniLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {etiNom, textNom});
-
-        Panel1.addTab("Añadir", panelIni);
-
-        tituloMed.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        tituloMed.setText("Buscar Canción");
-
-        etiNom2.setText("Nombre de Canción: ");
-
-
-        textoBuscar.setSize(20,5);
-        Busca.addActionListener(oye);
-        Eliminar.addActionListener(oye);
-        
+    }
+    private void PosicionesPanelMed(){                     
         javax.swing.GroupLayout medContLayout = new javax.swing.GroupLayout(medCont);
         medCont.setLayout(medContLayout);
         medContLayout.setHorizontalGroup(
@@ -275,23 +296,8 @@ public class Fin extends JFrame {
             panelMedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(medCont, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        grupo.add(Boton1);
-        grupo.add(Boton2);
-        grupo.add(Boton3);
-        grupo.add(Boton4);
-        grupo.add(Boton5);
-        grupo.add(Boton6);
-        Panel1.addTab("Buscar", panelMed);
-
-        TituloFin.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        TituloFin.setText("Cuantas canciones hay?");
-
-        textFin.setText("Se han introducido N° canciones al sistema:");
-
-        outputFin.setColumns(20);
-        outputFin.setRows(5);
-        scrollFin.setViewportView(outputFin);
-
+    }
+    private void PosicionesPanelFin(){
         javax.swing.GroupLayout panelFinLayout = new javax.swing.GroupLayout(panelFin);
         panelFin.setLayout(panelFinLayout);
         panelFinLayout.setHorizontalGroup(
@@ -330,38 +336,7 @@ public class Fin extends JFrame {
         );
 
         pack();
-    }                     
-    
-    public JTextArea getTextNom() {
-        return textNom;
-    }
 
-    public JTextArea getTextautor() {
-        return textautor;
-    }
-
-    public JComboBox<String> getGeneros() {
-        return generos;
-    }
-
-    public JButton getEnviar() {
-        return Enviar;
-    }
-
-    public JButton getBusca() {
-        return Busca;
-    }
-
-    public JButton getEliminar() {
-        return Eliminar;
-    }
-
-    public JTextArea getTextoBuscar() {
-        return textoBuscar;
-    }
-
-    public JTextField getOutput() {
-        return output;
     }
     public static String getFormatoSeleccionado() {
     // Recorre todos los botones de formato para encontrar el seleccionado
@@ -374,12 +349,25 @@ public class Fin extends JFrame {
     // Si ningún botón está seleccionado, devuelve null o un valor predeterminado
     return null;
 }
-    
+    public void cargarDesdeArchivo(JTextArea out) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("datos_canciones.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 4) {
+                    Pistas cancion = new Pistas(parts[0], parts[1], parts[2], parts[3]);
+                    out.setText(cancion.toString());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static void main(String args[]) {
         Fin ventana = new Fin();
         ventana.setDefaultCloseOperation(EXIT_ON_CLOSE);
         ventana.setVisible(true);
     }
-}
+} 
 
 

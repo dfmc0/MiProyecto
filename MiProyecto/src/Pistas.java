@@ -8,11 +8,11 @@
  *
  * @author DAW6W
  */
-public class Cancion implements Comparable<Cancion> {
+public class Pistas implements Comparable<Pistas> {
     private String titulo, autor,formato, genero;
     //private formatoCan formato;
 
-    public Cancion(String titulo, String autor, String formato, String genero) {
+    public Pistas(String titulo, String autor, String formato, String genero) {
         this.titulo = titulo;
         this.autor = autor;
         this.formato = formato;
@@ -39,7 +39,7 @@ public class Cancion implements Comparable<Cancion> {
     }
 
     @Override
-    public int compareTo(Cancion otraCancion) {
+    public int compareTo(Pistas otraCancion) {
         // Comparar por el título de la canción
         return this.titulo.compareTo(otraCancion.getTitulo());
     }

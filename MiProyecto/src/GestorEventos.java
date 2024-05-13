@@ -1,24 +1,27 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.swing.JLabel;
-import javax.swing.JRadioButton;
+
 
 public class GestorEventos implements ActionListener {
-    private SortedSet<Cancion> listaCanciones;
+    private SortedSet<Pistas> listaCanciones;
     private String formato;
     private JLabel cantidadLabel;
 
     public GestorEventos(JLabel cantidadLabel) {
-        this.listaCanciones = new TreeSet<>(Comparator.comparing(Cancion::getTitulo));
+        this.listaCanciones = new TreeSet<>(Comparator.comparing(Pistas::getTitulo));
         this.cantidadLabel = cantidadLabel;
         actualizarCantidadCanciones();
     }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == Fin.Enviar) {
@@ -29,18 +32,21 @@ public class GestorEventos implements ActionListener {
             String genero = (String) Fin.generos.getSelectedItem();
 
             // Crear la canción y agregarla a la lista
-            Cancion cancion = new Cancion(nombre, autor, formato, genero);
+            Pistas cancion = new Pistas(nombre, autor, formato, genero);
             listaCanciones.add(cancion);
 
             // Actualizar el JTextArea en el último panel
             actualizarListaCancionesEnFin();
+
+            // Guardar en el archivo datos_canciones.txt
+            guardarEnArchivo(cancion);
 
             // Actualizar la cantidad de canciones
             actualizarCantidadCanciones();
         } else if (e.getSource() == Fin.Busca) {
             // Buscar la canción por el título ingresado
             String tituloABuscar = Fin.textoBuscar.getText();
-            Cancion cancionEncontrada = buscarCancionPorTitulo(tituloABuscar);
+            Pistas cancionEncontrada = buscarCancionPorTitulo(tituloABuscar);
             if (cancionEncontrada != null) {
                 Fin.output.setText(cancionEncontrada.toString());
             } else {
@@ -58,12 +64,12 @@ public class GestorEventos implements ActionListener {
             }
 
             // Actualizar la cantidad de canciones
-            actualizarCantidadCanciones();
+            
         }
     }
 
-    private Cancion buscarCancionPorTitulo(String titulo) {
-        for (Cancion cancion : listaCanciones) {
+    public Pistas buscarCancionPorTitulo(String titulo) {
+        for (Pistas cancion : listaCanciones) {
             if (cancion.getTitulo().equals(titulo)) {
                 return cancion;
             }
@@ -71,8 +77,8 @@ public class GestorEventos implements ActionListener {
         return null;
     }
 
-    private boolean eliminarCancionPorTitulo(String titulo) {
-        for (Cancion cancion : listaCanciones) {
+    public boolean eliminarCancionPorTitulo(String titulo) {
+        for (Pistas cancion : listaCanciones) {
             if (cancion.getTitulo().equals(titulo)) {
                 listaCanciones.remove(cancion);
                 return true;
@@ -81,9 +87,18 @@ public class GestorEventos implements ActionListener {
         return false;
     }
 
+    public void guardarEnArchivo(Pistas cancion) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("datos_canciones.txt", true))) {
+            writer.write(cancion.toString());
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void actualizarListaCancionesEnFin() {
         StringBuilder cancionesConcatenadas = new StringBuilder();
-        for (Cancion c : listaCanciones) {
+        for (Pistas c : listaCanciones) {
             cancionesConcatenadas.append("Titulo: ").append(c.getTitulo())
                     .append(", Autor: ").append(c.getAutor())
                     .append(", Formato: ").append(c.getFormato())

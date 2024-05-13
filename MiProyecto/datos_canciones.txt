@@ -1,0 +1,25 @@
+Titulo: Cancion 1
+Autor: Autor 1
+Formato: mov
+Genero: Rock
+
+Titulo: asd
+Autor: asd
+Formato: mov
+Genero: Rock
+
+Titulo: asd
+Autor: asd
+Formato: mov
+Genero: Rock
+
+Titulo: asdsd
+Autor: asd
+Formato: mov
+Genero: Funky
+
+Titulo: asd
+Autor: asd
+Formato: mov
+Genero: Rock
+
