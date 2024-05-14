@@ -34,8 +34,7 @@ public class Pistas implements Comparable<Pistas> {
     }
     
     public String toString() {
-        return "Titulo: " + titulo + "\nAutor: " + autor + "\nFormato: " + 
-                formato + "\nGenero: " + genero + "\n";
+        return "Titulo: " + titulo + "| Autor: " + autor + "| Formato: " +formato + "| Genero: " + genero;
     }
 
     @Override

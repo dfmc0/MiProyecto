@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -20,7 +19,6 @@ public class GestorEventos implements ActionListener {
     public GestorEventos(JLabel cantidadLabel) {
         this.listaCanciones = new TreeSet<>(Comparator.comparing(Pistas::getTitulo));
         this.cantidadLabel = cantidadLabel;
-        actualizarCantidadCanciones();
     }
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -30,17 +28,13 @@ public class GestorEventos implements ActionListener {
             String autor = Fin.textautor.getText();
             formato = Fin.getFormatoSeleccionado();
             String genero = (String) Fin.generos.getSelectedItem();
-
             // Crear la canción y agregarla a la lista
             Pistas cancion = new Pistas(nombre, autor, formato, genero);
             listaCanciones.add(cancion);
-
             // Actualizar el JTextArea en el último panel
             actualizarListaCancionesEnFin();
-
             // Guardar en el archivo datos_canciones.txt
             guardarEnArchivo(cancion);
-
             // Actualizar la cantidad de canciones
             actualizarCantidadCanciones();
         } else if (e.getSource() == Fin.Busca) {
@@ -62,8 +56,6 @@ public class GestorEventos implements ActionListener {
             } else {
                 Fin.output.setText("La canción '" + tituloAEliminar + "' no existe en la lista");
             }
-
-            // Actualizar la cantidad de canciones
             
         }
     }
@@ -88,7 +80,9 @@ public class GestorEventos implements ActionListener {
     }
 
     public void guardarEnArchivo(Pistas cancion) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("datos_canciones.txt", true))) {
+        BufferedWriter writer;
+        try  {
+            writer = new BufferedWriter(new FileWriter("datos_canciones.txt", true));
             writer.write(cancion.toString());
             writer.newLine();
         } catch (IOException e) {
@@ -97,19 +91,16 @@ public class GestorEventos implements ActionListener {
     }
 
     public void actualizarListaCancionesEnFin() {
-        StringBuilder cancionesConcatenadas = new StringBuilder();
+        String cancionesConcatenadas = new String();
         for (Pistas c : listaCanciones) {
-            cancionesConcatenadas.append("Titulo: ").append(c.getTitulo())
-                    .append(", Autor: ").append(c.getAutor())
-                    .append(", Formato: ").append(c.getFormato())
-                    .append(", Genero: ").append(c.getGenero())
-                    .append("\n");
+            cancionesConcatenadas="Titulo: "+c.getTitulo()+", Autor: "+c.getAutor()+", Formato: "+Fin.getFormatoSeleccionado()+", Genero: "+c.getGenero();
         }
-        Fin.outputFin.setText(cancionesConcatenadas.toString());
+        Fin.outputFin.append(cancionesConcatenadas);
     }
 
     public void actualizarCantidadCanciones() {
         int cantidad = listaCanciones.size();
         cantidadLabel.setText("Se han introducido " + cantidad + " canciones al sistema");
     }
+    
 }

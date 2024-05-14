@@ -1,25 +1,8 @@
-Titulo: Cancion 1
-Autor: Autor 1
-Formato: mov
-Genero: Rock
-
-Titulo: asd
-Autor: asd
-Formato: mov
-Genero: Rock
-
-Titulo: asd
-Autor: asd
-Formato: mov
-Genero: Rock
-
-Titulo: asdsd
-Autor: asd
-Formato: mov
-Genero: Funky
-
-Titulo: asd
-Autor: asd
-Formato: mov
-Genero: Rock
+Titulo: asd| Autor: asd| Formato: mov| Genero: Rock
+Titulo: Cancion 1| Autor: Autor 2| Formato: mov| Genero: Rock
+Titulo: Cancion 2| Autor: Autor 1| Formato: mov| Genero: Rock
+Titulo: Cancion 3| Autor: Autor 3| Formato: mov| Genero: Rock
+Titulo: Cancion 4| Autor: Autor 4| Formato: wav| Genero: Rock
+Titulo: Cancion 5| Autor: Autor 5| Formato: mov| Genero: Rock
+Titulo: Cancion 6| Autor: Autor 6| Formato: wav| Genero: Reggae
 

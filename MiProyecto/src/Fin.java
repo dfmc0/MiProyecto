@@ -57,7 +57,7 @@ public class Fin extends JFrame {
     
     public Fin () {
         // INICIALIZA PESTAÑA INICIAL
-                
+        
         Panel1 = new JTabbedPane();
         panelIni = new JPanel();
         Titulo1 = new JLabel();
@@ -97,38 +97,28 @@ public class Fin extends JFrame {
         textFin = new JLabel();
         scrollFin = new JScrollPane();
         outputFin = new JTextArea();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
+        
+        
         Titulo1.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         Titulo1.setText("Añadir Cancion");
-
         etiNom.setText("Nombre de la Canción:");
-
         textNom.setSize(20, 30);
         etiAutor.setText("Autor/ra:");
         textautor.setSize(20, 30);
-        
         generos.setPreferredSize(null);
-        
         GestorEventos oye = new GestorEventos(textFin);
-        Enviar.addActionListener(oye); 
-        
+        Enviar.addActionListener(oye);
         oye.actualizarListaCancionesEnFin(); // Actualiza el JTextArea con las canciones cargadas
-
         Panel1.addTab("Añadir", panelIni);
 
+        
         tituloMed.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         tituloMed.setText("Buscar Canción");
-
         etiNom2.setText("Nombre de Canción: ");
-
-
         textoBuscar.setSize(20,5);
         Busca.addActionListener(oye);
         Eliminar.addActionListener(oye);
-        
-        
         grupo.add(Boton1);
         grupo.add(Boton2);
         grupo.add(Boton3);
@@ -136,12 +126,11 @@ public class Fin extends JFrame {
         grupo.add(Boton5);
         grupo.add(Boton6);
         Panel1.addTab("Buscar", panelMed);
-
+        
+        
         TituloFin.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         TituloFin.setText("Cuantas canciones hay?");
-
         textFin.setText("Se han introducido N° canciones al sistema:");
-
         outputFin.setColumns(20);
         outputFin.setRows(5);
         scrollFin.setViewportView(outputFin);
@@ -150,7 +139,6 @@ public class Fin extends JFrame {
         PosicionesPanelMed();
         PosicionesPanelFin();
         cargarDesdeArchivo(outputFin);
-        
     }
     private void PosicionesPanelIni(){
         javax.swing.GroupLayout panelIniLayout = new javax.swing.GroupLayout(panelIni);
@@ -349,24 +337,30 @@ public class Fin extends JFrame {
     // Si ningún botón está seleccionado, devuelve null o un valor predeterminado
     return null;
 }
-    public void cargarDesdeArchivo(JTextArea out) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("datos_canciones.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 4) {
-                    Pistas cancion = new Pistas(parts[0], parts[1], parts[2], parts[3]);
-                    out.setText(cancion.toString());
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     public static void main(String args[]) {
         Fin ventana = new Fin();
         ventana.setDefaultCloseOperation(EXIT_ON_CLOSE);
         ventana.setVisible(true);
+    }
+    public static void cargarDesdeArchivo(JTextArea espacio) {
+        BufferedReader lector= null;
+        try  {
+            lector = new BufferedReader(new FileReader("datos_canciones.txt"));
+            String linea= lector.readLine();
+            while (linea != null) {
+                espacio.append(linea);
+                linea=lector.readLine();
+                espacio.append("\n");
+            } 
+        } catch (IOException e) {
+            System.out.println("Error de Lectura");
+        }finally{
+            try {
+                lector.close();
+            } catch (Exception e) {
+                System.out.println("Error al cerrar");
+            }
+        }
     }
 } 
 
