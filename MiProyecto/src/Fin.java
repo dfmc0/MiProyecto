@@ -111,6 +111,8 @@ public class Fin extends JFrame {
         Enviar.addActionListener(oye);
         oye.actualizarListaCancionesEnFin(); // Actualiza el JTextArea con las canciones cargadas
         Panel1.addTab("Añadir", panelIni);
+        Panel1.setMnemonicAt(0,'A');
+        
 
         
         tituloMed.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -341,8 +343,9 @@ public class Fin extends JFrame {
         Fin ventana = new Fin();
         ventana.setDefaultCloseOperation(EXIT_ON_CLOSE);
         ventana.setVisible(true);
+        ventana.setLocationRelativeTo(null);
     }
-    public static void cargarDesdeArchivo(JTextArea espacio) {
+    public void cargarDesdeArchivo(JTextArea espacio) {
         BufferedReader lector= null;
         try  {
             lector = new BufferedReader(new FileReader("datos_canciones.txt"));

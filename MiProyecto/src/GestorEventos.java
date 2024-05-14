@@ -32,7 +32,6 @@ public class GestorEventos implements ActionListener {
             Pistas cancion = new Pistas(nombre, autor, formato, genero);
             listaCanciones.add(cancion);
             // Actualizar el JTextArea en el último panel
-            actualizarListaCancionesEnFin();
             // Guardar en el archivo datos_canciones.txt
             guardarEnArchivo(cancion);
             // Actualizar la cantidad de canciones
