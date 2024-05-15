@@ -1,105 +1,197 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import javax.swing.JLabel;
-
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
 
 public class GestorEventos implements ActionListener {
-    private SortedSet<Pistas> listaCanciones;
-    private String formato;
-    private JLabel cantidadLabel;
-
-    public GestorEventos(JLabel cantidadLabel) {
-        this.listaCanciones = new TreeSet<>(Comparator.comparing(Pistas::getTitulo));
-        this.cantidadLabel = cantidadLabel;
+    private Set<Pista> conjuntoCanciones;
+    private JTextArea outputFin;
+    private JLabel labelCantCanciones;
+    
+    //Constructor que recibe como parametro el JtextArea y el label del tercer Panel
+    public GestorEventos(JTextArea outputFin, JLabel labelCantCanciones) {
+        this.outputFin = outputFin;
+        this.labelCantCanciones = labelCantCanciones;
+        this.conjuntoCanciones = new TreeSet<>(); // Usar treeSet para mantener el orden
+        cargarDesdeArchivo();
+        actualizarListaCancionesEnFin();
+        mostrarMensajeBienvenida();
     }
+    
+    //Controlador de los botones que se van a utilizar
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == Fin.Enviar) {
-            // Obtener los datos de la canción
-            String nombre = Fin.textNom.getText();
-            String autor = Fin.textautor.getText();
-            formato = Fin.getFormatoSeleccionado();
-            String genero = (String) Fin.generos.getSelectedItem();
-            // Crear la canción y agregarla a la lista
-            Pistas cancion = new Pistas(nombre, autor, formato, genero);
-            listaCanciones.add(cancion);
-            // Actualizar el JTextArea en el último panel
-            // Guardar en el archivo datos_canciones.txt
-            guardarEnArchivo(cancion);
-            // Actualizar la cantidad de canciones
-            actualizarCantidadCanciones();
-        } else if (e.getSource() == Fin.Busca) {
-            // Buscar la canción por el título ingresado
-            String tituloABuscar = Fin.textoBuscar.getText();
-            Pistas cancionEncontrada = buscarCancionPorTitulo(tituloABuscar);
-            if (cancionEncontrada != null) {
-                Fin.output.setText(cancionEncontrada.toString());
+        if (e.getSource() == Contenido.Enviar) {
+            String nombre = Contenido.textNom.getText();
+            String autor = Contenido.textautor.getText();
+            String formato = getFormatoSeleccionado();
+            String genero = (String) Contenido.generos.getSelectedItem();
+            Pista cancion = new Pista(nombre, autor, formato, genero);
+            if (conjuntoCanciones.contains(cancion)) {
+                mostrarMensaje("La canción ya existe en la lista.");
             } else {
-                Fin.output.setText("Canción no encontrada");
+                agregarCancion(cancion);
             }
-
-        } else if (e.getSource() == Fin.Eliminar) {
-            // Eliminar la canción por el título ingresado
-            String tituloAEliminar = Fin.textoBuscar.getText();
-            boolean eliminada = eliminarCancionPorTitulo(tituloAEliminar);
-            if (eliminada) {
-                Fin.output.setText("Canción eliminada: " + tituloAEliminar);
-            } else {
-                Fin.output.setText("La canción '" + tituloAEliminar + "' no existe en la lista");
+        } else if (e.getSource() == Contenido.Busca) {
+            String tituloABuscar = Contenido.textoBuscar.getText();
+            buscarCancionPorTitulo(tituloABuscar);
+        } else if (e.getSource() == Contenido.Eliminar) {
+            String tituloAEliminar = Contenido.textoBuscar.getText();
+            if (confirmarEliminarCancion()) {
+                eliminarCancionPorTitulo(tituloAEliminar);
             }
-            
+        } else if (e.getSource() == Contenido.Actualizar) {
+            actualizarListaCancionesEnFin();
         }
     }
+    
+    // Lector del fichero para almacenarlo internamente para el manejo de los datos
+    public void cargarDesdeArchivo() {
+        BufferedReader lector = null;
+        try {
+            lector = new BufferedReader(new FileReader("datos_canciones.txt"));
+            String linea;
+            while ((linea = lector.readLine()) != null) {
+                Pista cancion = parsearLinea(linea);
+                if (cancion != null) {
+                    conjuntoCanciones.add(cancion);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (lector != null) {
+                try {
+                    lector.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    // Metodo que se encarga escribir los datos del fichero que son introducidos por el usuario
+    // o que son eliminados por el
+    public void guardarEnArchivo() {
+        BufferedWriter escritor = null;
+        try {
+            escritor = new BufferedWriter(new FileWriter("datos_canciones.txt"));
+            for (Pista cancion : conjuntoCanciones) {
+                escritor.write(cancion.toString());
+                escritor.newLine(); // Agregar un salto de línea después de cada canción
+            }
+            // No es necesario agregar la canción al conjunto aquí para evitar duplicados
+            // La lógica de evitar duplicados se maneja automáticamente en TreeSet
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (escritor != null) {
+                try {
+                    escritor.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    //Metodo simple de enviar un mensaje a la hora de abrir la aplicacion
+    private void mostrarMensajeBienvenida() {
+        JOptionPane.showMessageDialog(Contenido.Panel1, "Bienvenido/a a la aplicación de gestión de canciones.");
+    }
+    
+    //Metodo que manda un mensaje al usuario mediante un optionPane
+    private void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje);
+    }
 
-    public Pistas buscarCancionPorTitulo(String titulo) {
-        for (Pistas cancion : listaCanciones) {
+    //Metodo que envia un mensaje en busca de un confimación de que si esta seguro de eliminar la canción
+    private boolean confirmarEliminarCancion() {
+        int opcion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que deseas eliminar la canción?", "Confirmar Eliminar", JOptionPane.YES_NO_OPTION);
+        return opcion == JOptionPane.YES_OPTION;
+    }
+    
+    //Metodo que se encarga de actualizar el JtextArea final para ver los datos de canciones introducidas
+    //y actualiza la acnttidad de canciones que se muestra en el apnel final
+    public void actualizarListaCancionesEnFin() {
+        StringBuilder cancionesConcatenadas = new StringBuilder();
+        for (Pista c : conjuntoCanciones) {
+            cancionesConcatenadas.append("Titulo: ").append(c.getTitulo()).append(", Autor: ").append(c.getAutor())
+                    .append(", Formato: ").append(c.getFormato()).append(", Genero: ").append(c.getGenero())
+                    .append("\n");
+        }
+        outputFin.setText(cancionesConcatenadas.toString());
+        actualizarCantidadCanciones();
+    }
+    
+    //MEtodo que se encarga de la introducción de las cancinoes creada y actualiza la canttidad de 
+    //canciones que se muestra en el panel final
+    public void agregarCancion(Pista cancion) {
+        conjuntoCanciones.add(cancion);
+        guardarEnArchivo();
+        actualizarListaCancionesEnFin();
+    }
+    
+    //Metodo para buscar canciones en el segundo panel mediante el titulo y muestra 
+    // esta en el textArea que tiene debajo
+    public void buscarCancionPorTitulo(String titulo) {
+    for (Pista cancion : conjuntoCanciones) {
+        if (cancion.getTitulo().equals(titulo)) {
+            Contenido.output.setText(cancion.toString());
+            return;
+        }
+    }
+    Contenido.output.setText("Canción no encontrada");
+}
+    
+    //MEtodo que se encarga de eliminar cancinoes creada y actualiza la canttidad de 
+    //canciones que se muestra en el panel final
+    public void eliminarCancionPorTitulo(String titulo) {
+        cargarDesdeArchivo(); // Cargar datos del archivo en el conjunto
+        Iterator<Pista> iterator = conjuntoCanciones.iterator();
+        while (iterator.hasNext()) {
+            Pista cancion = iterator.next();
             if (cancion.getTitulo().equals(titulo)) {
-                return cancion;
+                iterator.remove();
+                guardarEnArchivo();
+                actualizarListaCancionesEnFin();
+                Contenido.output.setText("La canción '" + titulo + "' ha sido eliminada");
+                return;
+            }
+        }
+        Contenido.output.setText("La canción '" + titulo + "' no existe en la lista");
+        actualizarCantidadCanciones();
+    }
+    
+    //Metodo que se encarga de separar las líneas que se leen del fichero que estan separados por comas
+    //que ayuda a crear un objeto Pista devolviendolo
+    private Pista parsearLinea(String linea) {
+        String[] partes = linea.split(",");
+        if (partes.length == 4) {
+            String titulo = partes[0].substring(partes[0].indexOf(":") + 1).trim();
+            String autor = partes[1].substring(partes[1].indexOf(":") + 1).trim();
+            String formato = partes[2].substring(partes[2].indexOf(":") + 1).trim();
+            String genero = partes[3].substring(partes[3].indexOf(":") + 1).trim();
+            return new Pista(titulo, autor, formato, genero);
+        }
+        return null;
+    }
+    
+    //Metodo que se encraga de ver que radioButton esta activo en la clase  Contenido
+    //para extraer el formato deseado por el usuario para usarlo
+    private String getFormatoSeleccionado() {
+        for (Enumeration<AbstractButton> buttons = Contenido.grupo.getElements(); buttons.hasMoreElements(); ) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
             }
         }
         return null;
     }
-
-    public boolean eliminarCancionPorTitulo(String titulo) {
-        for (Pistas cancion : listaCanciones) {
-            if (cancion.getTitulo().equals(titulo)) {
-                listaCanciones.remove(cancion);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void guardarEnArchivo(Pistas cancion) {
-        BufferedWriter writer;
-        try  {
-            writer = new BufferedWriter(new FileWriter("datos_canciones.txt", true));
-            writer.write(cancion.toString());
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void actualizarListaCancionesEnFin() {
-        String cancionesConcatenadas = new String();
-        for (Pistas c : listaCanciones) {
-            cancionesConcatenadas="Titulo: "+c.getTitulo()+", Autor: "+c.getAutor()+", Formato: "+Fin.getFormatoSeleccionado()+", Genero: "+c.getGenero();
-        }
-        Fin.outputFin.append(cancionesConcatenadas);
-    }
-
-    public void actualizarCantidadCanciones() {
-        int cantidad = listaCanciones.size();
-        cantidadLabel.setText("Se han introducido " + cantidad + " canciones al sistema");
-    }
     
+    //Metodo que se encarga de actualizar de actualizar el JLabel del panel final para tener el número de 
+    // pistas que se han introducido al sistema
+    private void actualizarCantidadCanciones() {
+        labelCantCanciones.setText("Se han introducido " + conjuntoCanciones.size() + " canciones al sistema.");
+    }
 }
